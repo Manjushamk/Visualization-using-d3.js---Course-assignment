@@ -1,0 +1,210 @@
+<!Doctype html>
+<html>
+<head>
+    <title>
+        scattered plot chart for FIFA Top Audience
+    </title>
+
+    <style>
+        .circle1{
+            fill : #162479;
+        }
+
+        .circle2{
+            fill : #ff332d;
+        }
+
+        .circle3{
+            fill : orange;
+        }
+
+    </style>
+    <script src="https://d3js.org/d3.v3.js"></script>
+</head>
+<body>
+<script>
+
+    var svg_height = 580;
+    var svg_width = 1000;
+
+    var xaxis_length = 900;
+    var yaxis_length = 430;
+    var margin_graph = 50;
+
+    body_area = d3.select("body");
+
+    svg_area = body_area
+        .append("svg")
+        .attr("width",svg_width)
+        .attr("height",svg_height)
+        .style("background-color","#dfffe3");
+
+    svg_area.append("text")
+        .text("FIFA Countries: Population - Audience - GDP Shares scattered graph")
+        .attr("x",margin_graph*2)
+        .attr("y",margin_graph - 20)
+        .style("font-size","20px")
+        .style("font-weight","bold")
+        .style("fill","navy");
+
+    d3.csv("fifa_top_audience.csv",function(data){
+
+// xaxis scale
+        var scale_x = d3.scale.ordinal()
+            .rangeBands([0,xaxis_length]);
+
+// y axis scale
+        var scale_y = d3.scale.linear()
+            .range([yaxis_length,0]);
+
+// axis to scale
+        var x_axis = d3.svg.axis()
+            .scale(scale_x)
+            .orient("bottom");
+
+        var y_axis = d3.svg.axis()
+            .scale(scale_y)
+            .orient("left")
+            .ticks("20");
+
+
+
+        var max_pop_share = d3.max(data, function(d) { return +d.population_share;});
+        var min_pop_share = d3.min(data, function(d){return +d.population_share});
+
+        var max_tv_audience_share = d3.max(data, function(d) { return +d.tv_audience_share;});
+        var min_tv_audience_share = d3.min(data, function(d){return +d.tv_audience_share});
+
+        var max_gdp_weighted_share = d3.max(data, function(d) { return +d.gdp_weighted_share;});
+        var min_gdp_weighted_share = d3.min(data, function(d){return +d.gdp_weighted_share});
+
+
+        var max_y_domain = d3.max([max_pop_share , max_tv_audience_share,max_gdp_weighted_share]);
+        var min_y_domain = d3.min([min_pop_share, min_tv_audience_share,min_gdp_weighted_share]);
+
+		//domain assignment
+		
+        scale_x.domain(data.map(function(d){return d.country;}));
+        scale_y.domain([min_y_domain,max_y_domain]);
+
+        svg_area.append("g")
+            .attr("transform","translate( "+margin_graph+","+(margin_graph)+")")
+            .call(y_axis)
+            .style("fill","none")
+            .style("stroke","black")
+            .style("text-anchor", "end")
+            .style("font-size","12px")
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y",-30)
+            .attr("x",-200)
+            .text("Share values");
+
+
+
+
+        svg_area.append("g")
+            .attr("transform","translate( "+margin_graph+", "+ (svg_height - 2*margin_graph)+")")
+            .call(x_axis)
+            .style("fill","none")
+            .style("stroke","black")
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .style("font-size","14px")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-60)" );
+
+
+			//creating scattered plot with circles
+			
+        svg_area.selectAll(".circle1")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("class","circle1")
+            .attr("cx",function (d) {
+                return scale_x(d.country)+ 75;
+            })
+            .attr("cy",function(d){return scale_y(d.tv_audience_share) + 50;})
+            .attr("r","5");
+
+
+
+        svg_area.selectAll(".circle2")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("class","circle2")
+            .attr("cx",function (d) {
+                return scale_x(d.country)+ 75;
+            })
+            .attr("cy",function(d){return scale_y(d.population_share) + 50;})
+            .attr("r","5");
+
+
+        svg_area.selectAll(".circle3")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("class","circle3")
+            .attr("cx",function (d) {
+                return scale_x(d.country)+ 75;
+            })
+            .attr("cy",function(d){return scale_y(d.gdp_weighted_share) + 50;})
+            .attr("r","5");
+
+        svg_area.append("rect")
+            .attr("width",4*margin_graph)
+            .attr("height",2*margin_graph)
+            .attr("x",780)
+            .attr("y",20)
+            .style("fill-opacity",0)
+            .style("stroke","black")
+            .attr("fill","none");
+
+
+        svg_area.append("circle")
+            .attr("class","circle1")
+            .attr("cx",svg_width - 4*margin_graph)
+            .attr("cy",2*margin_graph - 60)
+            .attr("r",10);
+
+        svg_area.append("text")
+            .text("population share")
+            .attr("x",svg_width - 4*margin_graph +20)
+            .attr("y",2*margin_graph - 60)
+            .style("font-size","18px");
+
+
+        svg_area.append("circle")
+            .attr("class","circle2")
+            .attr("cx",svg_width - 4*margin_graph)
+            .attr("cy",2*margin_graph - 30)
+            .attr("r",10);
+
+        svg_area.append("text")
+            .text("TV Audience Share")
+            .attr("x",svg_width - 4*margin_graph +20)
+            .attr("y",2*margin_graph - 30)
+            .style("font-size","18px");
+
+        svg_area.append("circle")
+            .attr("class","circle3")
+            .attr("cx",svg_width - 4*margin_graph)
+            .attr("cy",2*margin_graph)
+            .attr("r",10);
+
+        svg_area.append("text")
+            .text("GDP weighted share")
+            .attr("x",svg_width - 4*margin_graph +20)
+            .attr("y",2*margin_graph )
+            .style("font-size","18px");
+
+
+    })
+
+
+</script>
+</body>
+</html>

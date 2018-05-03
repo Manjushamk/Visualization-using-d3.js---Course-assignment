@@ -1,0 +1,249 @@
+<!Doctype html>
+<html>
+<head>
+    <title>
+        democratic bench data
+    </title>
+    <script src="https://d3js.org/d3.v3.js"></script>
+</head>
+<body>
+<script>
+
+//json data input
+
+    democratic_bench_json = [{"cand":"Jerry Brown","raised_exp":35755700,"raised_act":20612943},
+        {"cand":"Bill Nelson","raised_exp":25208444,"raised_act":16803512},
+        {"cand":"Tim Kaine","raised_exp":26355130,"raised_act":18045722},
+        {"cand":"Richard Blumenthal","raised_exp":16278036,"raised_act":8733486},
+        {"cand":"Joe Manchin","raised_exp":16558376,"raised_act":9467003},
+        {"cand":"Angus King","raised_exp":9770367,"raised_act":2926581},
+        {"cand":"Jack Reed","raised_exp":9876779,"raised_act":3960335},
+        {"cand":"Barbara Mikulski","raised_exp":10810801,"raised_act":5508300},
+        {"cand":"Dan Malloy","raised_exp":11939781,"raised_act":6780072},
+        {"cand":"Sheldon Whitehouse","raised_exp":9876779,"raised_act":4883464},
+        {"cand":"Patrick Leahy","raised_exp":9849930,"raised_act":4869504},
+        {"cand":"Tom Carper","raised_exp":9844382,"raised_act":4882503},
+        {"cand":"Martin Heinrich","raised_exp":11314523,"raised_act":6699291},
+        {"cand":"Diane Feinstein","raised_exp":14083672,"raised_act":9797542},
+        {"cand":"Barbara Boxer","raised_exp":33616584,"raised_act":29331343},
+        {"cand":"Ben Cardin","raised_exp":10810801,"raised_act":6908143},
+        {"cand":"Mark Dayton","raised_exp":5448345,"raised_act":2000000},
+        {"cand":"Heidi Heitkamp","raised_exp":8702464,"raised_act":5638438},
+        {"cand":"Ron Wyden","raised_exp":9986744,"raised_act":6930089},
+        {"cand":"Maria Cantwell","raised_exp":14765281,"raised_act":11978158},
+        {"cand":"John Hickenlooper","raised_exp":6167605,"raised_act":3519365},
+        {"cand":"Bernie Sanders","raised_exp":9849930,"raised_act":7229492},
+        {"cand":"Tom Udall","raised_exp":9979836,"raised_act":8441116},
+        {"cand":"Mark Warner","raised_exp":18570914,"raised_act":17098544},
+        {"cand":"Gary Peters","raised_exp":11271952,"raised_act":10024419},
+        {"cand":"Dick Durbin","raised_exp":11288086,"raised_act":10320048},
+        {"cand":"Jack Markell","raised_exp":3084425,"raised_act":2410353},
+        {"cand":"Steve Bullock","raised_exp":2422976,"raised_act":2163103},
+        {"cand":"David Ige","raised_exp":3963199,"raised_act":3481597},
+        {"cand":"Maggie Hassan","raised_exp":5021139,"raised_act":4673302},
+        {"cand":"Peter Shumlin","raised_exp":3127182,"raised_act":2815029},
+        {"cand":"Chris Coons","raised_exp":9844382,"raised_act":9676246},
+        {"cand":"Gina Raimondo","raised_exp":2150120,"raised_act":2086084},
+        {"cand":"Debbie Stabenow","raised_exp":14338790,"raised_act":14376142},
+        {"cand":"Amy Klobuchar","raised_exp":10151115,"raised_act":10203513},
+        {"cand":"Jay Inslee","raised_exp":12226262,"raised_act":12459422},
+        {"cand":"Jay Nixon","raised_exp":15687202,"raised_act":16038330},
+        {"cand":"Lincoln Chafee","raised_exp":3550120,"raised_act":2561452},
+        {"cand":"Terry McAuliffe","raised_exp":27437764,"raised_act":38000100},
+        {"cand":"Martin O'Malley","raised_exp":10532406,"raised_act":11049802},
+        {"cand":"Michael Bennet","raised_exp":10915521,"raised_act":11536750},
+        {"cand":"Ed Markey","raised_exp":17816842,"raised_act":18624052},
+        {"cand":"Brian Schatz","raised_exp":5147181,"raised_act":6109936},
+        {"cand":"John Kitzhaber","raised_exp":4181578,"raised_act":5264547},
+        {"cand":"Steve Beshear","raised_exp":9548210,"raised_act":10632441},
+        {"cand":"Mike Beebe","raised_exp":3727896,"raised_act":5122940},
+        {"cand":"Jon Tester","raised_exp":11979448,"raised_act":13395778},
+        {"cand":"Earl Ray Tomblin","raised_exp":6228899,"raised_act":7661976},
+        {"cand":"Cory Booker","raised_exp":16248524,"raised_act":17718139},
+        {"cand":"Jeff Merkley","raised_exp":9986744,"raised_act":12018377},
+        {"cand":"Kirsten Gillibrand","raised_exp":13426080,"raised_act":15735457},
+        {"cand":"Patty Murray","raised_exp":14765281,"raised_act":17124667},
+        {"cand":"Mazie Hirono","raised_exp":2753262,"raised_act":5514418},
+        {"cand":"Joe Donnelly","raised_exp":2840496,"raised_act":5661997},
+        {"cand":"Chris Murphy","raised_exp":7581431,"raised_act":10543456},
+        {"cand":"Tammy Baldwin","raised_exp":11264133,"raised_act":14643868},
+        {"cand":"Bob Casey","raised_exp":10653868,"raised_act":14112753},
+        {"cand":"Claire McCaskill","raised_exp":16985892,"raised_act":21131810},
+        {"cand":"Jeanne Shaheen","raised_exp":12218091,"raised_act":16515174},
+        {"cand":"Deval Patrick","raised_exp":11751984,"raised_act":16293170},
+        {"cand":"Chuck Schumer","raised_exp":13426080,"raised_act":19519748},
+        {"cand":"Bob Menendez","raised_exp":10659885,"raised_act":17344783},
+        {"cand":"Sherrod Brown","raised_exp":18078374,"raised_act":24840222}
+    ];
+
+	
+    var svg_height = 580;
+    var svg_width = 1000;
+
+    var xaxis_length = 900;
+    var yaxis_length = 430;
+    var margin_graph = 50;
+
+    body_area = d3.select("body");
+
+    svg_area = body_area
+        .append("svg")
+        .attr("width",svg_width)
+        .attr("height",svg_height)
+        .style("background-color","#e4fff2");
+
+    svg_area.append("text")
+        .text("DEMOCRATICS FUNDS EXPECTED RAISE vs ACTUAL RAISE")
+        .attr("x",margin_graph*2)
+        .attr("y",margin_graph)
+        .style("font-size","16px")
+        .style("font-weight","bold")
+            .style("fill","navy");
+
+
+    // xaxis scale
+    var scale_x = d3.scale.ordinal()
+        .rangeBands([0,xaxis_length]);
+
+    // y axis scale
+    var scale_y = d3.scale.linear()
+        .range([yaxis_length,0]);
+
+
+
+//axis to scale
+    var x_axis = d3.svg.axis()
+        .scale(scale_x)
+        .orient("bottom");
+
+    var y_axis = d3.svg.axis()
+        .scale(scale_y)
+        .orient("left")
+        .ticks("20");
+
+
+
+    var max_rai_exp = d3.max(democratic_bench_json,function(d) { return +d.raised_exp;});
+    var min_rai_exp = d3.min(democratic_bench_json,function(d){return +d.raised_exp });
+
+
+
+    var max_rai_act = d3.max(democratic_bench_json,function(d) { return +d.raised_act;});
+    var min_rai_act = d3.min(democratic_bench_json,function(d){ return +d.raised_act;});
+
+    console.log(min_rai_act);
+
+    var max_y_domain = d3.max([max_rai_exp , max_rai_act]);
+    var min_y_domain = d3.min([min_rai_exp, min_rai_act]);
+
+    console.log(min_y_domain);
+
+	// assign domain
+	
+    scale_x.domain(democratic_bench_json.map(function(d){return d.cand;}));
+    scale_y.domain([min_y_domain,max_y_domain]);
+
+
+    svg_area.append("g")
+        .attr("transform","translate( "+(margin_graph+30)+","+(margin_graph -10)+")")
+        .call(y_axis)
+        .style("fill","none")
+        .style("stroke","black")
+        .style("fill","none")
+        .style("stroke","black")
+        .style("text-anchor", "end")
+        .style("font-size","12px")
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y",-70)
+        .attr("x",-200)
+        .text("funds")
+        .style("font-size","14px");
+
+    svg_area.append("g")
+        .attr("transform","translate( "+(margin_graph+30)+", "+ (svg_height - 2*margin_graph - 10)+")")
+        .call(x_axis)
+        .style("fill","none")
+        .style("stroke","black")
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .style("font-size","12px")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-60)" );
+
+// lines and paths creation
+
+    var line_raised_exp = d3.svg.line()
+        .x(function(d) {
+            return scale_x(d.cand)+ 87;
+        })
+        .y(function(d) {
+            return scale_y(d.raised_exp) + 38
+                ;
+        });
+
+
+    svg_area.append("path")
+        .attr("d",line_raised_exp(democratic_bench_json))
+        .attr("stroke", "#2944e8")
+        .attr("stroke-width", 1)
+        .attr("fill", "none");
+
+
+    var line_raised_act = d3.svg.line()
+        .x(function(d) {
+            return scale_x(d.cand)+ 87;
+        })
+        .y(function(d) {
+            return scale_y(d.raised_act) + 38;
+        });
+
+
+    svg_area.append("path")
+        .attr("d",line_raised_act(democratic_bench_json))
+        .attr("stroke", "#ff6e5c")
+        .attr("stroke-width", 1)
+        .attr("fill", "none");
+
+    svg_area.append("rect")
+        .attr("width",4*margin_graph)
+        .attr("height",2*margin_graph)
+        .attr("x",xaxis_length - 3*margin_graph)
+        .attr("y",20)
+        .style("fill-opacity",0)
+        .style("stroke","black")
+        .attr("fill","none");
+
+    svg_area.append("line")
+        .attr("x1",xaxis_length - 3*margin_graph +10 )
+        .attr("y1",margin_graph )
+        .attr("x2",xaxis_length - 2*margin_graph )
+        .attr("y2",margin_graph)
+        .attr("stroke-width", 2)
+        .attr("stroke", "#ff6e5c");
+
+    svg_area.append("text")
+        .text("actual fund raise")
+        .attr("x",svg_width - 4*margin_graph +10)
+        .attr("y",margin_graph )
+        .style("font-size","16px");
+
+    svg_area.append("line")
+        .attr("x1",xaxis_length - 3*margin_graph +10 )
+        .attr("y1",2*margin_graph )
+        .attr("x2",xaxis_length - 2*margin_graph )
+        .attr("y2",2*margin_graph)
+        .attr("stroke-width", 2)
+        .attr("stroke", "#2944e8");
+
+    svg_area.append("text")
+        .text("expected fund raise")
+        .attr("x",svg_width - 4*margin_graph +10)
+        .attr("y",2*margin_graph )
+        .style("font-size","16px");
+
+
+</script>
+</body>
+</html>

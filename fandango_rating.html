@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <title>bar graph fandango movie rating</title>
+</head>
+<body>
+<script>
+
+    var width_of_xaxis = 1020;
+    var height_of_y_axis = 450;
+    var body_area = d3.select("body");
+    var svg_area = body_area.append("svg")
+        .attr("height",575)
+        .attr("width",1200)
+        .style("background-color","#ffe0d6");
+
+    svg_area.append("text")
+        .text("BAR GRAPH: FANDANGO IMDB MOVIE RATINGS")
+        .attr("x",100)
+        .attr("y",30)
+        .style("font-size","20px")
+        .style("font-weight","bold")
+        .style("fill","navy");
+
+    var x_scale = d3.scale.ordinal()
+        .rangeBands([0,width_of_xaxis]);
+
+    var y1_scale = d3.scale.linear()
+        .domain([0, 10 ])
+        .range([height_of_y_axis,0]);
+
+
+    var y2_scale = d3.scale.linear()
+        .domain([0,	350000])
+        .range([height_of_y_axis,0]);
+
+    var x_axis = d3.svg.axis()
+        .scale(x_scale)
+        .orient("bottom");
+
+    var y_axis1 = d3.svg.axis()
+        .scale(y1_scale)
+        .orient("left");
+
+    var y_axis2 = d3.svg.axis()
+        .scale(y2_scale)
+        .orient("right");
+
+//importing data
+		
+    d3.csv("fandango_score_comparison.csv",function (data){
+	
+	//creating bars
+	
+       var green_bar = svg_area.append("g")
+            .attr("transform","translate(60,-50)")
+            .selectAll("rect")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("height",function(d){
+                return y1_scale(10 - (+d.IMDB));
+            })
+            .attr("width",25)
+            .attr("x", function(d, i) {return (i * 60 + 5)})
+            .attr("y",function(d, i){
+//                var max_imdb = d3.max(data, function(d) { return d.IMDB;});
+                return 530 - y1_scale(10 -(+d.IMDB)) ;
+            })
+            .attr("fill","green");
+
+//creating bars
+
+        svg_area.append("g")
+            .attr("transform","translate(80,-50)")
+            .selectAll("rect")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("height",function(d){ return y2_scale(350000 - (+d.IMDB_user_vote_count));})
+            .attr("width",25)
+            .attr("x", function(d, i) {return (i * 60 +11 )})
+            .attr("y", function(d, i) {return 530 - y2_scale(350000 - (+d.IMDB_user_vote_count));})
+            .attr("fill","red");
+
+			// x domain assigment
+
+        x_scale.domain(data.map(function(d){return d.FILM;}));
+
+        svg_area.append("g")
+            .attr("transform","translate(60,480)")
+            .call(x_axis)
+            .style("fill","none")
+            .style("stroke","black")
+            .style("font-size", "12px")
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-50)" );
+
+
+        svg_area.append("g")
+            .attr("transform","translate(60,30)")
+            .call(y_axis1)
+            .style("fill","none")
+            .style("stroke","black")
+            .style("font-size","16px")
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y",-40)
+            .attr("x",-300)
+            .text("IMDB Rating");
+
+
+        svg_area.append("g")
+            .attr("transform","translate(1080,30)")
+            .call(y_axis2)
+            .style("fill","none")
+            .style("stroke","black")
+            .style("font-size","16px")
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y",100)
+            .attr("x",-300)
+            .text("IMDB user votes");
+
+        svg_area.append("rect")
+            .attr("width",200)
+            .attr("height",75)
+            .attr("x",780)
+            .attr("y",20)
+            .style("fill-opacity",0)
+            .style("stroke","black")
+            .attr("fill","none");
+
+
+        svg_area.append("rect")
+            .attr("width",15)
+            .attr("height",15)
+            .attr("x",800)
+            .attr("y",40)
+            .attr("fill","green");
+
+        svg_area.append("text")
+            .text("IMDB rating")
+            .style("font-size","16px")
+            .attr("x",820)
+            .attr("y",55)
+            .style("fill","black");
+
+
+        svg_area.append("rect")
+            .attr("width",15)
+            .attr("height",15)
+            .attr("x",800)
+            .attr("y",60)
+            .attr("fill","red")
+
+        svg_area.append("text")
+            .text("IMDB user vote count")
+            .style("font-size","16px")
+            .attr("x",820)
+            .attr("y",75)
+            .style("fill","black");
+
+
+
+    });
+</script>
+</body>
+</html>
